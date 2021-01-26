@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "966857753350",
+    "project_id": "e-cycle-9ad6e",
+    "storage_bucket": "e-cycle-9ad6e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:966857753350:android:0fef79b5d1d3f776041487",
+        "android_client_info": {
+          "package_name": "com.lyj.ecycle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "966857753350-k5p80mh69qfjblr3935gc83hbq167jms.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbD5aDIC4D84bQvGDZ6fb5nOqvsP4MbSg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "966857753350-k5p80mh69qfjblr3935gc83hbq167jms.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
