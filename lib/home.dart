@@ -24,7 +24,7 @@ class _HomeState extends State<Home>
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int currentPage = 0;
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
 
   Widget buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -32,7 +32,7 @@ class _HomeState extends State<Home>
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
-        return buildList(context, snapshot.data.documents);
+        //return buildList(context, snapshot.data.documents);
       },
     );
   }
@@ -167,6 +167,7 @@ class _MainPage extends State<MainPage>{
     );
 }
 }
+/*
 
 
 
@@ -201,3 +202,5 @@ class GetUserName extends StatelessWidget {
 
 
 
+
+ */
