@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
-class ProfilePage extends StatefulWidget{
+/*class ProfilePage extends StatefulWidget{
   ProfilePage({Key key}) : super(key: key);
   @override
   _ProfilePage createState() => _ProfilePage();
@@ -31,4 +31,4 @@ class _ProfilePage extends State<ProfilePage>{
       ),
     );
   }
-}
+}*/

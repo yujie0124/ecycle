@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'map.dart';
+import 'map.dart';
 import 'schedule.dart';
 import 'profile.dart';
 
@@ -40,9 +41,9 @@ class _HomeState extends State<Home>
 
   List<Widget> options = <Widget>[
     MainPage(),
-    FindPage(),
+    MapSample(),
     SchedulePage(),
-    ProfilePage(),
+    //ProfilePage(),
   ];
 
 
