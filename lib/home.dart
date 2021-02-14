@@ -43,7 +43,7 @@ class _HomeState extends State<Home>
     MainPage(),
     MapSample(),
     SchedulePage(),
-    //ProfilePage(),
+    ProfilePage(),
   ];
 
 
