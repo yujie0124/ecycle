@@ -29,10 +29,10 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Home();
-            //return LoginRegister();
-
           }
-          return LoginRegister();
+          else{
+            return LoginRegister();
+          }
         },
       ),
       routes: <String, WidgetBuilder>{

@@ -1,6 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class ProfilePage extends StatelessWidget {
+final FirebaseAuth auth = FirebaseAuth.instance;
+
+class ProfilePage extends StatefulWidget {
+  ProfilePage({Key key}) : super(key: key);
+
+  @override
+  _ProfilePage createState() => _ProfilePage();
+}
+
+class _ProfilePage extends State<ProfilePage> {
+  var email;
+  var username;
+  var id;
+  var phone;
+  var address;
+
+  Future<String> getData() async {
+    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    final String uid = user.uid.toString();
+    id = uid;
+    username = user.displayName;
+    email = user.email;
+
+  }
+
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+
 
   Widget textfield({@required String hintText}){
     return Material(
@@ -66,7 +97,7 @@ class ProfilePage extends StatelessWidget {
                     color: Colors.white,
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage('assets/images/profile.jpg'),
+                      image: AssetImage('assets/images/profile.png'),
                     )
                 ),
               ),
