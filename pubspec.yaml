@@ -32,6 +32,7 @@ dependencies:
   location: ^3.0.0
   csv: 4.0.3
   url_launcher: ^5.2.5
+  datetime_picker_formfield: ^1.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -67,6 +68,9 @@ flutter:
     - family: Vidaloka
       fonts:
         - asset: assets/fonts/Vidaloka-Regular.ttf
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-SemiBold.ttf
 
   uses-material-design: true
 
