@@ -23,6 +23,7 @@ class EventsView extends StatefulWidget {
 class EventsViewState extends State<EventsView> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final DateTime _eventDate;
+  var refreshkey = GlobalKey<RefreshIndicatorState>();
 
   EventsViewState(DateTime date) : _eventDate = date;
 
@@ -43,6 +44,20 @@ class EventsViewState extends State<EventsView> {
     }
   }
 
+  Future<Null> refreshList() async {
+    refreshkey.currentState?.show(atTop: true);
+    await Future.delayed(Duration(seconds: 2));
+    if (!mounted) return;
+    setState(() {
+
+    });
+  }
+
+  void initState() {
+    refreshList();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -56,114 +71,118 @@ class EventsViewState extends State<EventsView> {
         onPressed: _onFabClicked,
         child: new Icon(Icons.add),
       ),
-      body: FutureBuilder(
-          future: _getEvents(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-              case ConnectionState.waiting:
-                return new LinearProgressIndicator();
-              case ConnectionState.done:
-              default:
-                if (snapshot.hasError)
-                  return new Text('Error: ${snapshot.error}');
-                else {
-                  return ListView(
-                    children: snapshot.data.documents.map((document) {
-                      Timestamp timestamp = document.data['time'];
-                      DateTime _eventTime = DateTime.tryParse(timestamp.toDate().toString());
-                      var eventDateFormatter = new DateFormat("MMMM d, yyyy 'at' h:mma");
+      body: RefreshIndicator(
+        onRefresh: refreshList,
+        key: refreshkey,
+        child: FutureBuilder(
+            future: _getEvents(),
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.waiting:
+                  return new LinearProgressIndicator();
+                case ConnectionState.done:
+                default:
+                  if (snapshot.hasError)
+                    return new Text('Error: ${snapshot.error}');
+                  else {
+                    return ListView(
+                      children: snapshot.data.documents.map((document) {
+                        Timestamp timestamp = document.data['time'];
+                        DateTime _eventTime = DateTime.tryParse(timestamp.toDate().toString());
+                        var eventDateFormatter = new DateFormat("MMMM d, yyyy 'at' h:mma");
 
-                      return new GestureDetector(
-                          onTap: () => _onCardClicked(document),
-                          child:
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Card(
-                              clipBehavior: Clip.antiAlias,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
+                        return new GestureDetector(
+                            onTap: () => _onCardClicked(document),
+                            child:
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Card(
+                                clipBehavior: Clip.antiAlias,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
 
-                                ),
-                                color: Color(0xFF333366),
-                                elevation: 10,
-                                child: new Row(
-                                  children: <Widget>[
-                                    new Expanded(
-                                      child:
-                                      new Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Padding(padding: EdgeInsets.all(8.0)),
-                                          new Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              new Text('    Event: ',
-                                                style: TextStyle(color: Colors.white, fontFamily: "Poppins", fontSize: 20),
-                                              ),
-                                              Flexible(
-                                                child: new Text(document.data['name'],maxLines: 4,
-                                                  style: TextStyle(color: Colors.amberAccent, fontFamily: "Poppins", fontSize: 20),
+                                  ),
+                                  color: Color(0xFF333366),
+                                  elevation: 10,
+                                  child: new Row(
+                                    children: <Widget>[
+                                      new Expanded(
+                                        child:
+                                        new Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Padding(padding: EdgeInsets.all(8.0)),
+                                            new Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                new Text('    Event: ',
+                                                  style: TextStyle(color: Colors.white, fontFamily: "Poppins", fontSize: 20),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          new Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              new Text('    Time: ',
-                                                //style: Theme.of(context).textTheme.headline5
-                                                style: TextStyle(color: Colors.white, fontFamily: "Poppins", fontSize: 18),
-                                              ),
-                                              Flexible(
-                                                child: new Text(eventDateFormatter.format(_eventTime),maxLines: 3,
+                                                Flexible(
+                                                  child: new Text(document.data['name'],maxLines: 4,
+                                                    style: TextStyle(color: Colors.amberAccent, fontFamily: "Poppins", fontSize: 20),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            new Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                new Text('    Time: ',
                                                   //style: Theme.of(context).textTheme.headline5
-                                                  style: TextStyle(color: Colors.amberAccent, fontFamily: "Poppins", fontSize: 18),
+                                                  style: TextStyle(color: Colors.white, fontFamily: "Poppins", fontSize: 18),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          new Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                           children: [
-                                             new Text('     Summary: ',
-                                               style: TextStyle(color: Colors.white, fontFamily: "Poppins",fontSize: 15),
-                                             ),
-                                             Flexible(
-                                               child: new Text(document.data['summary'],maxLines: 10,
-                                                 style: TextStyle(color: Colors.amberAccent, fontFamily: "Poppins",fontSize: 15),
+                                                Flexible(
+                                                  child: new Text(eventDateFormatter.format(_eventTime),maxLines: 3,
+                                                    //style: Theme.of(context).textTheme.headline5
+                                                    style: TextStyle(color: Colors.amberAccent, fontFamily: "Poppins", fontSize: 18),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            new Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                             children: [
+                                               new Text('     Summary: ',
+                                                 style: TextStyle(color: Colors.white, fontFamily: "Poppins",fontSize: 15),
                                                ),
-                                             ),
-                                           ],
-                                          ),
-                                          Padding(padding: EdgeInsets.all(8.0)),
-                                        ],
+                                               Flexible(
+                                                 child: new Text(document.data['summary'],maxLines: 10,
+                                                   style: TextStyle(color: Colors.amberAccent, fontFamily: "Poppins",fontSize: 15),
+                                                 ),
+                                               ),
+                                             ],
+                                            ),
+                                            Padding(padding: EdgeInsets.all(8.0)),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    new Container(
-                                        child: new IconButton(
-                                            color: Colors.white,
-                                            iconSize: 25.0,
-                                            padding: EdgeInsets.all(2.0),
-                                            icon: new Icon(Icons.delete),
-                                            onPressed: () => _deleteEvent(document))
-                                    ),
+                                      new Container(
+                                          child: new IconButton(
+                                              color: Colors.white,
+                                              iconSize: 25.0,
+                                              padding: EdgeInsets.all(2.0),
+                                              icon: new Icon(Icons.delete),
+                                              onPressed: () => _deleteEvent(document))
+                                      ),
 
-                                  ],
-                                ),
+                                    ],
+                                  ),
 
+                              ),
                             ),
-                          ),
 
-                      );
-                    }).toList(),
-                  );
-                }
+                        );
+                      }).toList(),
+                    );
+                  }
+              }
             }
-          }
+        ),
       ),
     );
   }
@@ -218,15 +237,18 @@ class EventsViewState extends State<EventsView> {
 
   }
 
-  void _onFabClicked() {
+  void _onFabClicked() async{
     DateTime _createDateTime = new DateTime(_eventDate.year, _eventDate.month, _eventDate.day,
         DateTime.now().hour, DateTime.now().minute);
 
     Event _event = new Event("", "",_createDateTime, null);
 
-    Navigator.push(context, MaterialPageRoute(
+    final reload = await Navigator.push(context, MaterialPageRoute(
         builder: (context) => EventCreator(_event)
-    )
-    );
+    ));
+        if(reload){
+          refreshList();
+        }
+
   }
 }

@@ -81,7 +81,6 @@ class _HomeState extends State<Home> {
                     child: username!=null ? Text(username[0]): Text(""),
                   ),
                 ),
-
                 ListTile(
                   leading: Icon(Icons.info, color: Colors.blueGrey,),
                   title: Text("About Us"),

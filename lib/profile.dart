@@ -27,7 +27,7 @@ class _ProfilePage extends State<ProfilePage> {
   TextEditingController nc;
   TextEditingController pc;
   TextEditingController ac;
-
+  var refreshkey = GlobalKey<RefreshIndicatorState>();
 
 
   Future<QuerySnapshot> getData() async {
@@ -60,9 +60,19 @@ class _ProfilePage extends State<ProfilePage> {
     ac = new TextEditingController(text: address);
   }
 
+  Future<Null> refreshList() async {
+    refreshkey.currentState?.show(atTop: true);
+    await Future.delayed(Duration(seconds: 2));
+    if (!mounted) return;
+    setState(() {
+      getData();
+    });
+  }
+
   void initState() {
     super.initState();
     getData();
+    refreshList();
   }
 
   @override
@@ -105,93 +115,95 @@ class _ProfilePage extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-          future: getData(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-              case ConnectionState.waiting:
-                return new LinearProgressIndicator();
-              case ConnectionState.done:
-              default:
-                if (snapshot.hasError)
-                    return new Text('Error: ${snapshot.error}');
-                else {
-                  return Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      CustomPaint(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height,
+      body: RefreshIndicator(
+        onRefresh: refreshList,
+        key: refreshkey,
+        child: FutureBuilder(
+            future: getData(),
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.waiting:
+                  return new LinearProgressIndicator();
+                case ConnectionState.done:
+                default:
+                  if (snapshot.hasError)
+                      return new Text('Error: ${snapshot.error}');
+                  else {
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CustomPaint(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                          ),
+                          painter: HeaderCurverdContainer(),
                         ),
-                        painter: HeaderCurverdContainer(),
-                      ),
 
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(15),
-                            child: Text("Profile",
-                              style: TextStyle(
-                                fontSize: 35,
-                                letterSpacing: 1.5,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(15),
+                              child: Text("Profile",
+                                style: TextStyle(
+                                  fontSize: 35,
+                                  letterSpacing: 1.5,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(10.0),
-                            width: MediaQuery.of(context).size.width/2,
-                            height: MediaQuery.of(context).size.width/2,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white, width: 5),
-                                shape: BoxShape.circle,
+                            Container(
+                              padding: EdgeInsets.all(10.0),
+                              width: MediaQuery.of(context).size.width/2,
+                              height: MediaQuery.of(context).size.width/2,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.white, width: 5),
+                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: AssetImage('assets/images/profile.png'),
+                                  )
+                              ),
+                            ),
+                          ],
+
+                        ),
+
+                        Padding(padding: EdgeInsets.only(bottom: 250,left: 184),
+                          child: CircleAvatar(
+                            backgroundColor:Colors.blue[700],
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.edit,
                                 color: Colors.white,
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/images/profile.png'),
-                                )
-                            ),
-                          ),
-                        ],
-
-                      ),
-
-                      Padding(padding: EdgeInsets.only(bottom: 250,left: 184),
-                        child: CircleAvatar(
-                          backgroundColor:Colors.blue[700],
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                            ),
-                            onPressed: ()
-                            {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      content: Stack(
-                                        overflow: Overflow.visible,
-                                        children: <Widget>[
-                                          Positioned(
-                                            right: -40.0,
-                                            top: -40.0,
-                                            child: InkResponse(
-                                              onTap: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: CircleAvatar(
-                                                child: Icon(Icons.close),
-                                                backgroundColor: Colors.blueGrey,
+                              ),
+                              onPressed: ()
+                              {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        content: Stack(
+                                          overflow: Overflow.visible,
+                                          children: <Widget>[
+                                            Positioned(
+                                              right: -40.0,
+                                              top: -40.0,
+                                              child: InkResponse(
+                                                onTap: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: CircleAvatar(
+                                                  child: Icon(Icons.close),
+                                                  backgroundColor: Colors.blueGrey,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Form(
+                                            Form(
                                               key: _formKey,
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
@@ -250,7 +262,7 @@ class _ProfilePage extends State<ProfilePage> {
                                                           Firestore.instance.collection("users").document(docID)
                                                               .setData({'address': newAddress, 'displayName': newName, 'email':currentUser.email, 'phone': newPhone});
                                                         }
-                                                            Navigator.pop(context);
+                                                        Navigator.pop(context);
                                                             },
                                                       color: Colors.blue[800],
                                                       child: Center(
@@ -264,51 +276,62 @@ class _ProfilePage extends State<ProfilePage> {
                                                 ],
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  });
-                            },
+                                          ],
+                                        ),
+                                      );
+                                    });
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                       Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Padding(padding: EdgeInsets.only(top:5.0)),
-                            Container(
-                              height: 400,
-                              width: double.infinity,
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              child: Column(
-                                children: [
-                                  Padding(padding: EdgeInsets.only(top:24.0)),
-                                  textfield(
-                                    hintText: username,
+                         Padding(
+                           padding: const EdgeInsets.only(top:250.0),
+                           child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  height: 295,
+                                  width: double.infinity,
+                                  margin: EdgeInsets.symmetric(horizontal: 10),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      textfield(
+                                        hintText: username,
+                                      ),
+
+                                      textfield(
+                                        hintText: email,
+                                      ),
+
+                                      textfield(
+                                        hintText: phone,
+                                      ),
+
+                                      textfield(
+                                        hintText: address,
+                                      ),
+                                    ],
                                   ),
-                                  Padding(padding: EdgeInsets.only(top:10.0)),
-                                  textfield(
-                                    hintText: email,
-                                  ),
-                                  Padding(padding: EdgeInsets.only(top:10.0)),
-                                  textfield(
-                                    hintText: phone,
-                                  ),
-                                  Padding(padding: EdgeInsets.only(top:10.0)),
-                                  textfield(
-                                    hintText: address,
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                    ],
-                  );
-                }
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: FloatingActionButton(
+                                      elevation: 0.0,
+                                      child: new Icon(Icons.refresh),
+                                      backgroundColor: Colors.indigoAccent,
+                                      onPressed: (){refreshList();}),
+                                )
+                              ],
+                            ),
+                         ),
+
+                      ],
+                    );
+                  }
+              }
             }
-          }
+        ),
       )
 
     );

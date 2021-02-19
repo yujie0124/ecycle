@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -64,7 +62,10 @@ class _LoginRegisterState extends State<LoginRegister> {
   bool _loading = false;
   bool _autoValidate = false;
   String errorMsg = "";
+  TextEditingController emailController = new TextEditingController();
 
+  var resetEmail;
+  final _resetformKey = GlobalKey<FormState>();
   void initState() {
     super.initState();
 
@@ -135,7 +136,40 @@ class _LoginRegisterState extends State<LoginRegister> {
       );
     }
 
-    Future<void> resetPassword(String email) async {
+    void resetPassword(String email) async {
+      showDialog(context: context,
+          builder: (BuildContext context){
+            return AlertDialog(
+              title: Text("Success Sending Reset Password Email"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text("Reset Password Email is sent to your registered email address. "
+                        "Please check your email to change the password and login in with new password. "
+                        "Thank you! You can ignore the email if you do not want to reset your password."),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top:8.0),
+                    child: RaisedButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                      },
+                      color: Colors.blue[800],
+                      child: Center(
+                        child: Text("Okay",style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.white
+                        ),),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            );
+          }
+      );
       await auth.sendPasswordResetEmail(email: email);
     }
 
@@ -514,6 +548,71 @@ class _LoginRegisterState extends State<LoginRegister> {
                             ),
                             SizedBox(
                               height: 20,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  left: 20,
+                                  right: 20,
+                                  bottom: MediaQuery.of(context).viewInsets.bottom),
+                              child: Container(
+                                child: RaisedButton(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: new BorderRadius.circular(30.0)),
+                                  color: primaryColor,
+                                  textColor: Colors.white,
+                                  child: Text("Reset Password",style: TextStyle(fontFamily: 'Vidaloka',fontWeight:FontWeight.bold,fontSize: 18),),
+                                  onPressed: (){
+                                    showDialog(context: context,
+                                    builder: (BuildContext context){
+                                      return AlertDialog(
+                                          title: new Text("Enter your registered email to reset Password"),
+                                          content:Form(
+                                            key: _resetformKey,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: TextFormField(
+                                                    controller: emailController,
+                                                    onSaved: (String value) => resetEmail,
+                                                    decoration: InputDecoration(
+                                                      icon: Icon(Icons.drive_file_rename_outline),
+                                                      labelText: 'Email Address',
+                                                      labelStyle: TextStyle(color: Colors.black,fontSize: 14)
+                                                  ),
+                                                ),
+                                              ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(top:8.0),
+                                                  child: RaisedButton(
+                                                    onPressed: ()async{
+                                                     resetEmail = emailController.text;
+                                                      print(resetEmail);
+                                                     Navigator.pop(context);
+                                                     resetPassword(resetEmail);
+
+                                                    },
+                                                    color: Colors.blue[800],
+                                                    child: Center(
+                                                      child: Text("Send",style: TextStyle(
+                                                          fontSize: 15,
+                                                          color: Colors.white
+                                                      ),),
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                      );
+                                    });
+
+                                    },
+                                ),
+                                height: 40,
+                                width: 200,
+                              ),
                             ),
                           ],
                         ),

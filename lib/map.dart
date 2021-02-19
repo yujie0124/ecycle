@@ -8,7 +8,7 @@ class MapSample extends StatefulWidget {
 }
 
 class MapSampleState extends State<MapSample> {
-  
+
   Map<MarkerId,Marker> markers = {};
   //Set<Marker> _markers ={};
   List listMarkerIds=List();
