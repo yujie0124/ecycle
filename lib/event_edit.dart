@@ -101,14 +101,23 @@ class EventEditorState extends State<EventEditor> {
                   titleWidget,
                   SizedBox(height: 16.0),
                   new DateTimeField(
-                    onShowPicker: (context, currentValue) {
-                      return showDatePicker(
+                    onShowPicker: (context, currentValue) async {
+                      final date = await showDatePicker(
                           context: context,
                           firstDate: DateTime(2000),
                           initialDate: widget._event != null ? widget._event.time : DateTime.now(),
                           lastDate: DateTime(2100));
+                      if (date != null) {
+                        final time = await showTimePicker(
+                          context: context,
+                          initialTime:
+                          TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                        );
+                        return DateTimeField.combine(date, time);
+                      }else{
+                        return DateTime.now();
+                      }
                     },
-                    //initialDate: widget._event != null ? widget._event.time : DateTime.now(),
                     initialValue: widget._event != null ? widget._event.time : DateTime.now(),
                     //inputType: InputType.both,
                     format: dateFormat,

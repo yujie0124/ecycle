@@ -101,13 +101,23 @@ class EventCreatorState extends State<EventCreator> {
                   titleWidget,
                   SizedBox(height: 16.0),
                   new DateTimeField(
-                    onShowPicker: (context, currentValue) {
-                      return showDatePicker(
+                    onShowPicker: (context, currentValue) async {
+                          final date = await showDatePicker(
                           context: context,
                           firstDate: DateTime(2000),
                           initialDate: widget._event != null ? widget._event.time : DateTime.now(),
                           lastDate: DateTime(2100));
-                    },
+                           if (date != null) {
+                             final time = await showTimePicker(
+                               context: context,
+                               initialTime:
+                               TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                             );
+                             return DateTimeField.combine(date, time);
+                           }else{
+                             return DateTime.now();
+                           }
+                           },
 
                     initialValue: widget._event != null ? widget._event.time : DateTime.now(),
                     format: dateFormat,
@@ -126,6 +136,7 @@ class EventCreatorState extends State<EventCreator> {
                     validator: this._validateDate,
                     onSaved: (DateTime value) => this._eventData.time = value,
                   ),
+                  SizedBox(height: 16.0),
                   SizedBox(height: 16.0),
                   notesWidget,
                 ],
