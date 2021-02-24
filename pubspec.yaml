@@ -33,7 +33,9 @@ dependencies:
   csv: 4.0.3
   url_launcher: ^5.2.5
   datetime_picker_formfield: ^1.0.0
-  app_review: ^2.0.1
+  flutter_local_notifications: ^4.0.1
+  firebase_messaging: ^5.0.2
+  intl: ^0.16.1
 
 
   # The following adds the Cupertino Icons font to your application.

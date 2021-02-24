@@ -9,6 +9,10 @@
         android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission
         android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission
+        android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission
+        android:name="android.permission.VIBRATE" />
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="ecycle"
@@ -49,5 +53,12 @@
             android:value="2" />
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAlxhGkvVJ-V978ZTPbUud_JsX7IqWhoEY"/>
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
     </application>
 </manifest>

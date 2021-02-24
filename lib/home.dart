@@ -38,6 +38,8 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     getData();
+    initializing();
+    showNotifications();
   }
 
   int currentPage = 0;
@@ -53,7 +55,6 @@ class _HomeState extends State<Home> {
     SchedulePage(),
     ProfilePage(),
   ];
-
 
 
   @override
